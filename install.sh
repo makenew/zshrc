@@ -6,9 +6,12 @@ main () {
 
   repo='makenew/zshrc'
 
-  zdotdir="${ZDOTDIR:-${XDG_CONFIG_HOME:-$HOME/.config}/zsh}"
-  zplug_home="${ZPLUG_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/zplug}"
-  zplug_cache_dir="${ZPLUG_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/zplug}"
+  config_home=${XDG_CONFIG_HOME:-$HOME/.config}
+  cache_home=${XDG_CACHE_HOME:-$HOME/.config}
+  zdotdir="${ZDOTDIR:-${config_home}/zsh}"
+  zplug_home="${ZPLUG_HOME:-${config_home}/zplug}"
+  zplug_cache_dir="${ZPLUG_CACHE_DIR:-${cache_home}/zplug}"
+  dotzshrc="${zdotdir}/.zshrc"
 
   if [ "${1:-}" == 'dev' ]; then
     dev_mode ${2:-master}
@@ -84,23 +87,23 @@ install_zshrc () {
     echo -e "\033[32m    ✔ Installed   ❰ zplug ❱   \033[0m"
   fi
 
-  if [ -f $zdotdir/.zshrc ] || [ -h $zdotdir/.zshrc ]; then
-    zshrc_line=$(head -n 1 $zdotdir/.zshrc)
+  if [ -f $dotzshrc ] || [ -h $dotzshrc ]; then
+    zshrc_line=$(head -n 1 $dotzshrc)
 
     if [ "$zshrc_line" != "# ${repo}" ]; then
-      echo -e "  ➤  Exists       ❰ ${zdotdir}/.zshrc ❱   \033[0m"
+      echo -e "  ➤  Exists       ❰ ${dotzshrc} ❱   \033[0m"
 
-      mv $zdotdir/.zshrc $zdotdir/.zshrc.preinstall
+      mv $dotzshrc $dotzshrc.preinstall
 
-      echo -e "\033[32m    ✔ Moved to    ❰ ${zdotdir}/.zshrc.preinstall ❱   \033[0m"
+      echo -e "\033[32m    ✔ Moved to    ❰ ${dotzshrc}.preinstall ❱   \033[0m"
     else
-      rm $zdotdir/.zshrc
+      rm $dotzshrc
     fi
   fi
 
-  echo -e "  ➤ Installing    ❰ ${zdotdir}/.zshrc ❱   \033[0m"
+  echo -e "  ➤ Installing    ❰ ${dotzshrc} ❱   \033[0m"
 
-  tee $zdotdir/.zshrc >/dev/null <<EOF
+  tee $dotzshrc >/dev/null <<EOF
 # $repo
 export ZSHRC_REPO=$repo
 
@@ -133,7 +136,7 @@ fi
 zplug load
 EOF
 
-  echo -e "\033[32m    ✔ Installed   ❰ ${zdotdir}/.zshrc ❱   \033[0m"
+  echo -e "\033[32m    ✔ Installed   ❰ ${dotzshrc} ❱   \033[0m"
 
   echo
   echo -e "\033[32m✔ Install complete!   \033[0m"
@@ -151,7 +154,7 @@ dev_mode () {
 
   i=0
   while [ $i -lt ${#f_str[@]} ]; do
-    sed -i -e "s|${f_str[$i]}|${r_str[$i]}|g" $zdotdir/.zshrc
+    sed -i -e "s|${f_str[$i]}|${r_str[$i]}|g" $dotzshrc
     i=$(( i + 1 ))
   done
 
